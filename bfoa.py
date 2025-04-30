@@ -6,7 +6,6 @@ from Bio import SeqIO
 from random import randint
 
 def calcular_fitness(secuencia1, secuencia2):
- 
     return np.random.random()
 
 def calcular_blosum(secuencia1, secuencia2):
@@ -17,50 +16,51 @@ def optimizar_bacterias(secuencias, num_iteraciones, num_bacterias, w_atract, dt
     tiempos = []
     interacciones = []
     blosum_scores = []
-    
-    for _ in range(num_iteraciones):
 
+    for _ in range(num_iteraciones):
         start_time = time.time()
         mejor_fitness = -float('inf')
         interacciones_count = 0
         mejor_blosum = -float('inf')
-        
+
         for _ in range(num_bacterias):
-            secuencia1, secuencia2 = np.random.choice(secuencias, 2)
+            secuencia1, secuencia2 = np.random.choice(secuencias, 2, replace=False)  
             
             fitness = calcular_fitness(secuencia1, secuencia2)
             blosum = calcular_blosum(secuencia1, secuencia2)
-            
+
             mejor_fitness = max(mejor_fitness, fitness)
             mejor_blosum = max(mejor_blosum, blosum)
-            
+
             interacciones_count += 1
-        
+
         fitnesses.append(mejor_fitness)
         tiempos.append(time.time() - start_time)
         interacciones.append(interacciones_count)
         blosum_scores.append(mejor_blosum)
-    
+
     return fitnesses, tiempos, interacciones, blosum_scores
 
-# archivo FASTA
 def cargar_secuencias(fasta_file):
     secuencias = []
     for record in SeqIO.parse(fasta_file, "fasta"):
-        secuencias.append(str(record.seq))
+        secuencias.append(str(record.seq)) 
     return secuencias
 
-fasta_file = "multifasta.fasta"  
+fasta_file = "multifasta.fasta"
 secuencias = cargar_secuencias(fasta_file)
 
+# Parámetros 
 num_iteraciones = 30
 num_bacterias = 50
-w_atract = 1.0  
+w_atract = 1.0 
 dtract = 0.1    
 wRepel = 1.0    
 dRepel = 0.1    
 
-fitnesses, tiempos, interacciones, blosum_scores = optimizar_bacterias(secuencias, num_iteraciones, num_bacterias, w_atract, dtract, wRepel, dRepel)
+fitnesses, tiempos, interacciones, blosum_scores = optimizar_bacterias(
+    secuencias, num_iteraciones, num_bacterias, w_atract, dtract, wRepel, dRepel
+)
 
 resultados = pd.DataFrame({
     "Iteración": range(1, num_iteraciones + 1),
